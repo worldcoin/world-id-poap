@@ -1,0 +1,37 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+    provider             = "mysql"
+    url                  = env("DATABASE_URL")
+    referentialIntegrity = "prisma"
+}
+
+model User {
+    address String @id
+}
+
+model Poap {
+    id          Int      @id @default(autoincrement())
+    slug        String   @unique
+    name        String
+    description String
+    image_url   String
+    created_at  DateTime @default(now())
+    updated_at  DateTime @updatedAt
+
+    links PoapLink[]
+}
+
+model PoapLink {
+    id         Int       @id @default(autoincrement())
+    poap_id    Int
+    claim_code String
+    claimed_at DateTime?
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
+
+    poap Poap @relation(fields: [poap_id], references: [id])
+}
