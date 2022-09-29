@@ -8,7 +8,6 @@ import { ChangeEventHandler, useCallback, useState } from 'react'
 
 const CreatePage = () => {
 	const { setOpen } = useModal()
-	const [poapId, setPoapId] = useState<string>('')
 	const { authenticated } = useWalletAuth()
 	const [links, setLinks] = useState<string[]>(null)
 
@@ -26,10 +25,10 @@ const CreatePage = () => {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ poapId, links }),
+				body: JSON.stringify({ links }),
 			})
 		},
-		[poapId, links, authenticated, setOpen]
+		[links, authenticated, setOpen]
 	)
 
 	const onFileUpload: ChangeEventHandler<HTMLInputElement> = useCallback(async event => {
@@ -48,7 +47,6 @@ const CreatePage = () => {
 		<div>
 			<ConnectWallet />
 			<form onSubmit={submitForm}>
-				<input type="text" value={poapId} onChange={e => setPoapId(e.target.value)} placeholder="POAP id" />
 				<input onChange={onFileUpload} name="links" type="file" accept="text/plain" />
 				{links && <p>Found {links.length} links.</p>}
 				<button>Create</button>

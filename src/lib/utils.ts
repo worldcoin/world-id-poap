@@ -9,6 +9,8 @@ export const toText = (file: File): Promise<string> => {
 	})
 }
 
+export const arr_random = <T>(items: T[]): T => items[Math.floor(Math.random() * items.length)]
+
 export const slugify = (name: string): string => {
 	return name
 		.toLowerCase()

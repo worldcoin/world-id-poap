@@ -35,3 +35,9 @@ model PoapLink {
 
     poap Poap @relation(fields: [poap_id], references: [id])
 }
+
+model Credential {
+    slug       String   @id
+    value      String   @db.Text
+    updated_at DateTime @updatedAt
+}

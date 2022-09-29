@@ -11,7 +11,7 @@
 	"dependencies": {
 		"@fontsource/rubik": "^4.5.11",
 		"@heroicons/react": "^2.0.11",
-		"@prisma/client": "^4.3.1",
+		"@prisma/client": "^4.4.0",
 		"@worldcoin/id": "^0.8.0",
 		"autoprefixer": "^10.4.7",
 		"connectkit": "^0.0.2",
@@ -34,7 +34,7 @@
 		"eslint": "8.16.0",
 		"eslint-config-next": "12.1.6",
 		"prettier-plugin-sort-imports-desc": "^1.0.0",
-		"prisma": "^4.3.1",
+		"prisma": "^4.4.0",
 		"typescript": "^4.6.4"
 	},
 	"prisma": {
