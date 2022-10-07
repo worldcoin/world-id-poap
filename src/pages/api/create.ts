@@ -13,17 +13,23 @@ const handler = async (req: NextApiRequest<{ links: string[] }>, res: NextApiRes
 	const links = req.body.links.map(link => ({ claim_code: POAP_URL_REGEX.exec(link)[1] }))
 	const meta = await getDetailsFromClaimCode(arr_random(links).claim_code)
 
-	const poap = await prisma.poap.create({
-		data: {
-			name: meta.name,
-			slug: meta.fancy_id,
-			image_url: meta.image_url,
-			description: meta.description,
-			links: { createMany: { data: links } },
-		},
-	})
+	try {
+		const poap = await prisma.poap.create({
+			data: {
+				name: meta.name,
+				slug: meta.fancy_id,
+				image_url: meta.image_url,
+				description: meta.description,
+				links: { createMany: { data: links } },
+			},
+		})
 
-	return res.status(200).json(poap)
+		return res.status(200).json(poap)
+	} catch (e) {
+		if (e.code == 'P2002') return res.status(409).end()
+
+		return res.status(500).end()
+	}
 }
 
 export default withSession(handler)

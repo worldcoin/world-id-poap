@@ -14,13 +14,14 @@ model User {
 }
 
 model Poap {
-    id          Int      @id @default(autoincrement())
-    slug        String   @unique
-    name        String
-    description String
-    image_url   String
-    created_at  DateTime @default(now())
-    updated_at  DateTime @updatedAt
+    id           Int      @id @default(autoincrement())
+    slug         String   @unique
+    name         String
+    description  String
+    image_url    String
+    fallback_url String?
+    created_at   DateTime @default(now())
+    updated_at   DateTime @updatedAt
 
     links PoapLink[]
 }

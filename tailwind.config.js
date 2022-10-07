@@ -10,6 +10,7 @@ module.exports = {
 					gray: '#473E6B',
 					pink: '#E87C8A',
 					purple: '#7E76F2',
+					blue: '#4940E0',
 				},
 			},
 			fontFamily: {
@@ -17,5 +18,5 @@ module.exports = {
 			},
 		},
 	},
-	plugins: [],
+	plugins: [require('@tailwindcss/forms')],
 }

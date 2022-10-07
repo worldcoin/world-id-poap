@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import prisma from '@/lib/prisma'
 import dynamic from 'next/dynamic'
 import toast from 'react-hot-toast'
@@ -6,7 +7,6 @@ import { getActionId } from '@/lib/wld'
 import { serialize } from '@/lib/utils'
 import { FC, useCallback, useState } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { worldIDHash } from '@worldcoin/id/dist/utils'
 import { VerificationResponse, WidgetProps } from '@worldcoin/id'
 const WorldIDWidget = dynamic<WidgetProps>(() => import('@worldcoin/id').then(mod => mod.WorldIDWidget), { ssr: false })
 
@@ -16,33 +16,70 @@ const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
 	const claimPoap = useCallback(
 		async event => {
 			event.preventDefault()
+			if (!proof) return
 
 			//@TODO: Handle case where no more codes left
-			const { claim_code } = await fetch(`/api/claim/${poap.slug}`, {
+			const response = await fetch(`/api/claim/${poap.slug}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify(proof),
-			}).then(res => res.json())
+			})
 
+			if (!response.ok) {
+				if (response.status == 404) throw toast.error('POAP not found.')
+				if (response.status == 403) throw toast.error('You have already claimed this POAP!')
+
+				throw toast.error('Something went wrong. Please try again later.')
+			}
+
+			const { claim_code } = await response.json()
 			window.location.href = `https://poap.xyz/claim/${claim_code}`
 		},
 		[poap, proof]
 	)
 
 	return (
-		<div>
-			<h1>Claim {poap.name}</h1>
-			<WorldIDWidget
-				signal={poap.slug}
-				onSuccess={setProof}
-				enableTelemetry={true}
-				actionId={getActionId(poap)}
-				advancedUseRawActionId={true}
-				onError={() => toast.error('Something went wrong!')}
-			/>
-			<button onClick={claimPoap}>Claim</button>
+		<div className="flex flex-col items-center justify-center py-4 rounded-3xl space-y-8 max-w-xs md:max-w-md mx-auto min-h-screen">
+			<p className="text-poap-blue text-lg">Worldcoin x POAP</p>
+			<form onSubmit={claimPoap} className="flex flex-col items-center space-y-6">
+				<div className="flex flex-col items-center space-y-4">
+					<Image src={poap.image_url} width={128} height={128} alt={poap.name} />
+					<div className="space-y-3">
+						<h1 className="text-poap-blue text-2xl text-center">
+							Prove you are a unique person to claim your POAP
+						</h1>
+						<p className="font-medium text-black/70 text-center">{poap.name}</p>
+					</div>
+				</div>
+				<div className="flex flex-col items-center space-y-6">
+					<WorldIDWidget
+						signal={poap.slug}
+						onSuccess={setProof}
+						enableTelemetry={true}
+						actionId={getActionId(poap)}
+						advancedUseRawActionId={true}
+						onError={() => toast.error('Something went wrong!')}
+					/>
+					{poap.fallback_url && (
+						<p className="text-black/50 text-sm text-center max-w-xs mx-auto">
+							If you don’t have World ID, this POAP has an{' '}
+							<a href={poap.fallback_url} target="_blank" className="text-poap-blue" rel="noreferrer">
+								alternate version
+							</a>{' '}
+							that does not verify you are a unique person.
+						</p>
+					)}
+				</div>
+				<button
+					disabled={!proof}
+					type="submit"
+					className="bg-poap-blue py-3 text-center text-white rounded-lg w-full disabled:opacity-75 disabled:cursor-not-allowed transition"
+				>
+					Claim POAP
+				</button>
+			</form>
 		</div>
 	)
 }
