@@ -1,12 +1,15 @@
 {
-	"name": "dapp-starter",
+	"name": "world-id-poap",
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"postinstall": "prisma generate",
+		"migrate": "prisma migrate deploy",
+		"vercel-build": "yarn migrate && next build"
 	},
 	"dependencies": {
 		"@fontsource/rubik": "^4.5.11",
