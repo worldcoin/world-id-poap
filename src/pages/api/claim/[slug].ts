@@ -20,7 +20,7 @@ const handler = async (req: NextApiRequest<VerificationResponse, { slug: string 
 	}).then(res => res.json())
 	if (!success) return res.status(403).end()
 
-	prisma.poapLink.update({ where: { id: poap.links[0].id }, data: { claimed_at: now() } })
+	await prisma.poapLink.update({ where: { id: poap.links[0].id }, data: { claimed_at: now() } })
 
 	return res.status(200).json({ claim_code: poap.links[0].claim_code })
 }
