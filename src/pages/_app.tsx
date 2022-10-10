@@ -1,24 +1,24 @@
 import '@/styles/styles.css'
+import posthog from 'posthog-js'
+import { useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
+import { usePostHog } from '@/hooks/usePostHog'
 import Web3Provider from '@/components/Web3Provider'
-import { usePostHog } from '@/hooks/usePostHog';
-import { useEffect } from 'react';
-import posthog from 'posthog-js';
 
 const App = ({ Component, pageProps }) => {
-	usePostHog();
+	usePostHog()
 	useEffect(() => {
-		const apiKey = process.env.NEXT_PUBLIC_POSTHOG_API_KEY;
+		const apiKey = process.env.NEXT_PUBLIC_POSTHOG_API_KEY
 		if (apiKey) {
 			posthog.init(process.env.NEXT_PUBLIC_POSTHOG_API_KEY, {
 				autocapture: true,
-				debug: process.env.NODE_ENV === "development",
+				debug: process.env.NODE_ENV === 'development',
 				persistence: 'localStorage+cookie',
-				loaded: (posthog) => {
-				  posthog.register({ env: process.env.NODE_ENV });
+				loaded: posthog => {
+					posthog.register({ env: process.env.NODE_ENV })
 				},
-			  });
-			  posthog.register({'app': 'world-id-poap'})
+			})
+			posthog.register({ app: 'world-id-poap' })
 		}
 	}, [])
 	return (
