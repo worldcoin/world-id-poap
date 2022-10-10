@@ -4,7 +4,6 @@ import prisma from '@/lib/prisma'
 import dynamic from 'next/dynamic'
 import toast from 'react-hot-toast'
 import { Poap } from '@prisma/client'
-import { getActionId } from '@/lib/wld'
 import { serialize } from '@/lib/utils'
 import { FC, useCallback, useState } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
@@ -65,8 +64,7 @@ const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
 							signal={poap.slug}
 							onSuccess={setProof}
 							enableTelemetry={true}
-							actionId={getActionId(poap)}
-							advancedUseRawActionId={true}
+							actionId={poap.action_id}
 							onError={() => toast.error('Something went wrong!')}
 						/>
 						{poap.fallback_url && (
