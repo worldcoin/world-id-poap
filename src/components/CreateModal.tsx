@@ -1,6 +1,7 @@
 import toast from 'react-hot-toast'
 import { toText } from '@/lib/utils'
 import { useModal } from 'connectkit'
+import Spinner from './icons/Spinner'
 import { useRouter } from 'next/router'
 import { POAP_URL_REGEX } from '@/lib/consts'
 import WorldcoinLogo from './icons/WorldcoinLogo'
@@ -14,6 +15,7 @@ const CreateModal: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose
 	const { setOpen } = useModal()
 	const { authenticated } = useWalletAuth()
 	const [links, setLinks] = useState<string[]>([])
+	const [creating, setCreating] = useState(false)
 
 	const onFileUpload: ChangeEventHandler<HTMLInputElement> = useCallback(async event => {
 		event.preventDefault()
@@ -37,6 +39,8 @@ const CreateModal: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose
 				throw toast.error('Please sign in first.')
 			}
 
+			setCreating(true)
+
 			const response = await fetch('/api/create', {
 				method: 'POST',
 				headers: {
@@ -44,6 +48,8 @@ const CreateModal: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose
 				},
 				body: JSON.stringify({ links }),
 			})
+
+			setCreating(false)
 
 			if (!response.ok) {
 				if (response.status == 409) throw toast.error('You have already added this POAP!')
@@ -53,7 +59,7 @@ const CreateModal: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose
 			const poap = await response.json()
 			router.push(`/claim/${poap.slug}`)
 		},
-		[router, links, authenticated, setOpen]
+		[router, links, authenticated, setOpen, setCreating]
 	)
 
 	return (
@@ -104,7 +110,7 @@ const CreateModal: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose
 												<button
 													onClick={() =>
 														alert(
-															"You'll get this from POAP via email once your POAP gets approved."
+															'You get this directly from POAP via email once your POAP gets approved.'
 														)
 													}
 												>
@@ -116,6 +122,7 @@ const CreateModal: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose
 													type="file"
 													accept="text/plain"
 													onChange={onFileUpload}
+													disabled={creating}
 													className="w-full text-sm text-black/50 file:mr-3 file:py-2 file:px-6 file:rounded-lg file:border-0 file:text-sm file:bg-poap-blue file:text-white hover:file:cursor-pointer focus:outline-none focus-visible:ring"
 												/>
 											</label>
@@ -130,9 +137,10 @@ const CreateModal: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose
 								<div className="mt-5 sm:mt-6">
 									<button
 										type="submit"
-										disabled={links.length === 0}
+										disabled={links.length === 0 || creating}
 										className="inline-flex w-full justify-center rounded-md border border-poap-blue px-4 py-3 text-poap-blue shadow-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-poap-blue sm:text-sm disabled:cursor-not-allowed disabled:opacity-50 transition-opacity"
 									>
+										{creating && <Spinner />}
 										Create Dispenser
 									</button>
 								</div>

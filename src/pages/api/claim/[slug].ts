@@ -1,6 +1,5 @@
 import { now } from '@/lib/utils'
 import prisma from '@/lib/prisma'
-import { getActionId } from '@/lib/wld'
 import { VerificationResponse } from '@worldcoin/id'
 import { NextApiRequest, NextApiResponse } from '@/types/next'
 
@@ -17,11 +16,11 @@ const handler = async (req: NextApiRequest<VerificationResponse, { slug: string 
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ ...req.body, signal: req.query.slug, action_id: getActionId(poap) }),
+		body: JSON.stringify({ ...req.body, signal: req.query.slug, action_id: poap.action_id }),
 	}).then(res => res.json())
 	if (!success) return res.status(403).end()
 
-	prisma.poapLink.update({ where: { id: poap.links[0].id }, data: { claimed_at: now() } })
+	await prisma.poapLink.update({ where: { id: poap.links[0].id }, data: { claimed_at: now() } })
 
 	return res.status(200).json({ claim_code: poap.links[0].claim_code })
 }

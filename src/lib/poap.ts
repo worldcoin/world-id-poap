@@ -34,7 +34,6 @@ export const getToken = async (): Promise<string> => {
 export const getDetailsFromClaimCode = async (claimCode: string): Promise<PoapDetails> => {
 	return fetch(`https://api.poap.tech/actions/claim-qr?qr_hash=${claimCode}`, {
 		headers: {
-			'X-API-Key': process.env.POAP_TOKEN,
 			Authorization: `Bearer ${await getToken()}`,
 		},
 	})

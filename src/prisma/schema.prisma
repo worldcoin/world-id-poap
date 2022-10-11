@@ -17,8 +17,9 @@ model Poap {
     id           Int      @id @default(autoincrement())
     slug         String   @unique
     name         String
-    description  String
+    description  String   @db.Text()
     image_url    String
+    action_id    String
     fallback_url String?
     created_at   DateTime @default(now())
     updated_at   DateTime @updatedAt
