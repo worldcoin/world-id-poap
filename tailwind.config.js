@@ -16,6 +16,13 @@ module.exports = {
 					purple: '#7E76F2',
 					blue: '#4940E0',
 				},
+				primary: '#4940E0',
+				neutral: {
+					DEFAULT: '#191C20',
+					light: '#858494',
+					icon: '#D1D3D4',
+					border: '#F1F5F8'
+				},
 				'd1d3d4': '#d1d3d4',
 			},
 			fontSize: {
@@ -43,9 +50,19 @@ module.exports = {
 			fontFamily: {
 				sans: ['RubikVariable', ...defaultTheme.fontFamily.sans],
 			},
+			lineHeight: {
+				'1px': '1px',
+				'4.5': '1.125rem',
+			},
 			maxWidth: {
 				'container': '68.5rem',
-			}
+			},
+			borderRadius: {
+				'2': '0.5rem',
+			},
+			boxShadow: {
+				paper: '0px 2px 8px rgba(0, 0, 0, 0.04), 0px 10px 32px rgba(37, 57, 129, 0.04)',
+			},
 		},
 	},
 	plugins: [require('@tailwindcss/forms')],

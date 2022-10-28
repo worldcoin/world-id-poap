@@ -9,7 +9,7 @@ interface ContainerInterface {
 const Container: FC<ContainerInterface> = (props) => {
     const { className, children } = props
     return (
-        <div className={clsx("w-full max-w-container mx-auto", className)}>
+        <div className={clsx('w-full max-w-container mx-auto', className)}>
             {children}
         </div>
     )
