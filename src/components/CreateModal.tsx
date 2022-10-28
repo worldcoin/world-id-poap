@@ -1,16 +1,23 @@
+import { ChangeEventHandler, useCallback, useState } from 'react'
+import Modal from '@/components/Modal'
+import WorldcoinLogo from '@/components/icons/WorldcoinLogo'
+import Button from '@/components/Button'
 import toast from 'react-hot-toast'
 import { toText } from '@/lib/utils'
 import { useModal } from 'connectkit'
 import Spinner from './icons/Spinner'
 import { useRouter } from 'next/router'
 import { POAP_URL_REGEX } from '@/lib/consts'
-import WorldcoinLogo from './icons/WorldcoinLogo'
 import useWalletAuth from '@/hooks/useWalletAuth'
-import { Transition, Dialog } from '@headlessui/react'
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid'
-import { ChangeEventHandler, FC, Fragment, useCallback, useState } from 'react'
 
-const CreateModal: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) => {
+interface CreateModalInterface {
+	open: boolean
+	onClose: () => void
+}
+
+const CreateModal = (props: CreateModalInterface) => {
+	const { open, onClose } = props
 	const router = useRouter()
 	const { setOpen } = useModal()
 	const { authenticated } = useWalletAuth()
@@ -63,93 +70,63 @@ const CreateModal: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose
 	)
 
 	return (
-		<Transition.Root show={open} as={Fragment}>
-			<Dialog as="div" className="relative z-10" onClose={onClose}>
-				<Transition.Child
-					as={Fragment}
-					enter="ease-out duration-300"
-					enterFrom="opacity-0"
-					enterTo="opacity-100"
-					leave="ease-in duration-200"
-					leaveFrom="opacity-100"
-					leaveTo="opacity-0"
-				>
-					<div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-				</Transition.Child>
-
-				<div className="fixed inset-0 z-10 overflow-y-auto">
-					<div className="flex min-h-full justify-center text-center items-center">
-						<Transition.Child
-							as={Fragment}
-							enter="ease-out duration-300"
-							enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-							enterTo="opacity-100 translate-y-0 sm:scale-100"
-							leave="ease-in duration-200"
-							leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-							leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-						>
-							<Dialog.Panel
-								as="form"
-								onSubmit={submitForm}
-								className="relative transform overflow-hidden rounded-lg bg-white px-4 py-5 pb-4 text-left shadow-xl transition-all md:my-8 w-full max-w-sm sm:p-6 sm:pt-8"
-							>
-								<div>
-									<div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-poap-blue/10">
-										<WorldcoinLogo className="h-6 w-6 text-poap-purple" aria-hidden="true" />
-									</div>
-									<div className="mt-3 text-center sm:mt-6">
-										<div className="mb-4 sm:mb-6">
-											<Dialog.Title as="h3" className="text-3xl text-gray-900">
-												Create Your Dispenser
-											</Dialog.Title>
-											<p className="text-poap-purple">Worldcoin x Magic POAP Dispenser</p>
-										</div>
-										<div className="mt-2">
-											<p className="text-xs text-gray-500 mb-2 text-left flex items-center space-x-1">
-												<span>Select a .txt file that contains your POAP mint links.</span>
-												<button
-													onClick={() =>
-														alert(
-															'You get this directly from POAP via email once your POAP gets approved.'
-														)
-													}
-												>
-													<QuestionMarkCircleIcon className="w-4 h-4 text-poap-blue/30" />
-												</button>
-											</p>
-											<label className="block border bg-poap-blue/10 p-1 rounded-lg">
-												<input
-													type="file"
-													accept="text/plain"
-													onChange={onFileUpload}
-													disabled={creating}
-													className="w-full text-sm text-black/50 file:mr-3 file:py-2 file:px-6 file:rounded-lg file:border-0 file:text-sm file:bg-poap-blue file:text-white hover:file:cursor-pointer focus:outline-none focus-visible:ring"
-												/>
-											</label>
-											{links.length > 0 && (
-												<p className="text-xs text-gray-500 mt-2">
-													You will create a POAP claim link for {links.length} links.
-												</p>
-											)}
-										</div>
-									</div>
-								</div>
-								<div className="mt-5 sm:mt-6">
-									<button
-										type="submit"
-										disabled={links.length === 0 || creating}
-										className="inline-flex w-full justify-center rounded-md border border-poap-blue px-4 py-3 text-poap-blue shadow-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-poap-blue sm:text-sm disabled:cursor-not-allowed disabled:opacity-50 transition-opacity"
-									>
-										{creating && <Spinner />}
-										Create Dispenser
-									</button>
-								</div>
-							</Dialog.Panel>
-						</Transition.Child>
-					</div>
+		<Modal
+			open={open}
+			onClose={onClose}
+		>
+			<form className="text-center" onSubmit={submitForm}>
+				<div className="mx-auto flex items-center justify-center w-24 h-24 rounded-full text-poap-blue bg-poap-blue/10">
+					<WorldcoinLogo className="h-8"/>
 				</div>
-			</Dialog>
-		</Transition.Root>
+				<h2 className="mt-6 text-h2 leading-[1.375]">
+					Create Your Dispenser
+				</h2>
+				<p className="mt-1 text-md text-poap-blue">
+					Worldcoin x Magic POAP Dispenser
+				</p>
+				<hr className="my-4 border-poap-gray-light"/>
+				<div className="mt-2">
+					<p className="text-xs text-gray-500 mb-2 text-left flex items-center space-x-1">
+						<span>Select a .txt file that contains your POAP mint links.</span>
+						<button
+							onClick={() =>
+								alert(
+									'You get this directly from POAP via email once your POAP gets approved.'
+								)
+							}
+						>
+							<QuestionMarkCircleIcon className="w-4 h-4 text-poap-blue/30" />
+						</button>
+					</p>
+					<label className="block border bg-poap-blue/10 p-1 rounded-lg">
+						<input
+							type="file"
+							accept="text/plain"
+							onChange={onFileUpload}
+							disabled={creating}
+							className="w-full text-sm text-black/50 file:mr-3 file:py-2 file:px-6 file:rounded-lg file:border-0 file:text-sm file:bg-poap-blue file:text-white hover:file:cursor-pointer focus:outline-none focus-visible:ring"
+						/>
+					</label>
+					{links.length > 0 && (
+						<p className="text-xs text-gray-500 mt-2">
+							You will create a POAP claim link for {links.length} links.
+						</p>
+					)}
+				</div>
+				<hr className="my-4 border-poap-gray-light"/>
+				<Button
+					className="mt-2 mb-12 text-poap-blue border-poap-blue"
+					variant="outlined"
+					size="lg"
+					fullWidth
+					type="submit"
+					disabled={links.length === 0 || creating}
+				>
+					{creating && <Spinner />}
+					Create Dispenser
+				</Button>
+			</form>
+		</Modal>
 	)
 }
 
