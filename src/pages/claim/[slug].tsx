@@ -1,9 +1,11 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import prisma from '@/lib/prisma'
 import toast from 'react-hot-toast'
 import { Poap } from '@prisma/client'
+import { serialize } from '@/lib/utils'
 import { FC, useCallback, useState } from 'react'
-import { GetStaticPaths } from 'next'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { IDKitWidget, ISuccessResult } from '@worldcoin/idkit'
 
 const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
@@ -82,6 +84,13 @@ const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
 			</div>
 		</>
 	)
+}
+
+export const getStaticProps: GetStaticProps<{}, { slug: string }> = async ({ params: { slug } }) => {
+	const poap = await prisma.poap.findUnique({ where: { slug } })
+	if (!poap) return { notFound: true }
+
+	return { props: { poap: serialize(poap) } }
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
