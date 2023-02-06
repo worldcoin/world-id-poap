@@ -1,17 +1,13 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import prisma from '@/lib/prisma'
-import dynamic from 'next/dynamic'
 import toast from 'react-hot-toast'
 import { Poap } from '@prisma/client'
-import { serialize } from '@/lib/utils'
 import { FC, useCallback, useState } from 'react'
-import { GetStaticPaths, GetStaticProps } from 'next'
-import { VerificationResponse, WidgetProps } from '@worldcoin/id'
-const WorldIDWidget = dynamic<WidgetProps>(() => import('@worldcoin/id').then(mod => mod.WorldIDWidget), { ssr: false })
+import { GetStaticPaths } from 'next'
+import { IDKitWidget, ISuccessResult } from '@worldcoin/idkit'
 
 const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
-	const [proof, setProof] = useState<VerificationResponse>(null)
+	const [proof, setProof] = useState<ISuccessResult>(null)
 
 	const claimPoap = useCallback(
 		async event => {
@@ -58,14 +54,12 @@ const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
 						</div>
 					</div>
 					<div className="flex flex-col items-center space-y-6">
-						<WorldIDWidget
-							appName="Worldcoin x POAP"
-							signalDescription="Prove you are a unique person to claim your POAP"
+						<IDKitWidget
 							signal={poap.slug}
-							onSuccess={setProof}
-							enableTelemetry={true}
+							enableTelemetry
 							actionId={poap.action_id}
-							onError={() => toast.error('Something went wrong!')}
+							onSuccess={setProof}
+							methods={['orb']}
 						/>
 						{poap.fallback_url && (
 							<p className="text-black/50 text-sm text-center max-w-xs mx-auto">
@@ -88,13 +82,6 @@ const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
 			</div>
 		</>
 	)
-}
-
-export const getStaticProps: GetStaticProps<{}, { slug: string }> = async ({ params: { slug } }) => {
-	const poap = await prisma.poap.findUnique({ where: { slug } })
-	if (!poap) return { notFound: true }
-
-	return { props: { poap: serialize(poap) } }
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
