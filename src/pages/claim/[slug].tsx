@@ -4,8 +4,8 @@ import prisma from '@/lib/prisma'
 import toast from 'react-hot-toast'
 import { Poap } from '@prisma/client'
 import { serialize } from '@/lib/utils'
-import { FC, useCallback, useState } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { IDKitWidget, ISuccessResult } from '@worldcoin/idkit'
 
 const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
@@ -60,9 +60,11 @@ const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
 							signal={poap.slug}
 							enableTelemetry
 							actionId={poap.action_id}
-							onSuccess={setProof}
 							methods={['orb']}
-						/>
+							handleVerify={setProof}
+						>
+							{({ open }) => <button onClick={open}>Verify</button>}
+						</IDKitWidget>
 						{poap.fallback_url && (
 							<p className="text-black/50 text-sm text-center max-w-xs mx-auto">
 								If you don’t have World ID, this POAP has an{' '}
