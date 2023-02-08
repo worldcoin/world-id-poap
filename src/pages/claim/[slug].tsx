@@ -1,17 +1,15 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import prisma from '@/lib/prisma'
-import dynamic from 'next/dynamic'
 import toast from 'react-hot-toast'
 import { Poap } from '@prisma/client'
 import { serialize } from '@/lib/utils'
-import { FC, useCallback, useState } from 'react'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { VerificationResponse, WidgetProps } from '@worldcoin/id'
-const WorldIDWidget = dynamic<WidgetProps>(() => import('@worldcoin/id').then(mod => mod.WorldIDWidget), { ssr: false })
+import { FC, useCallback, useEffect, useState } from 'react'
+import { IDKitWidget, ISuccessResult } from '@worldcoin/idkit'
 
 const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
-	const [proof, setProof] = useState<VerificationResponse>(null)
+	const [proof, setProof] = useState<ISuccessResult>(null)
 
 	const claimPoap = useCallback(
 		async event => {
@@ -58,15 +56,15 @@ const ClaimPage: FC<{ poap: Poap }> = ({ poap }) => {
 						</div>
 					</div>
 					<div className="flex flex-col items-center space-y-6">
-						<WorldIDWidget
-							appName="Worldcoin x POAP"
-							signalDescription="Prove you are a unique person to claim your POAP"
+						<IDKitWidget
 							signal={poap.slug}
-							onSuccess={setProof}
-							enableTelemetry={true}
+							enableTelemetry
 							actionId={poap.action_id}
-							onError={() => toast.error('Something went wrong!')}
-						/>
+							methods={['orb']}
+							handleVerify={setProof}
+						>
+							{({ open }) => <button onClick={open}>Verify</button>}
+						</IDKitWidget>
 						{poap.fallback_url && (
 							<p className="text-black/50 text-sm text-center max-w-xs mx-auto">
 								If you don’t have World ID, this POAP has an{' '}
