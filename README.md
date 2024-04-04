@@ -1,3 +1,5 @@
+> ## :warning: **Warning**: This repo is no longer maintained and should not be used as reference
+
 # dApp Starter
 
 > The template I use to kickstart all my web3 apps.
