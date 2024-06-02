@@ -1,9 +1,9 @@
 import { now } from '@/lib/utils'
 import prisma from '@/lib/prisma'
-import { VerificationResponse } from '@worldcoin/id'
+import { ISuccessResult } from '@worldcoin/idkit'
 import { NextApiRequest, NextApiResponse } from '@/types/next'
 
-const handler = async (req: NextApiRequest<VerificationResponse, { slug: string }>, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest<ISuccessResult, { slug: string }>, res: NextApiResponse) => {
 	//@TODO: Handle case where there are no links left
 	const poap = await prisma.poap.findUnique({
 		where: { slug: req.query.slug as string },
@@ -16,7 +16,12 @@ const handler = async (req: NextApiRequest<VerificationResponse, { slug: string 
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ ...req.body, signal: req.query.slug, action_id: poap.action_id }),
+		body: JSON.stringify({
+			...req.body,
+			...req.body.proof_payload,
+			signal: req.query.slug,
+			action_id: poap.action_id,
+		}),
 	}).then(res => res.json())
 	if (!success) return res.status(403).end()
 
